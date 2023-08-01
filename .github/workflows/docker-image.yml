@@ -1,0 +1,104 @@
+name: Docker Image CI
+
+on:
+  release:
+    types: [created]
+    
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Kustomize
+      uses: imranismail/setup-kustomize@v1
+      with:
+        kustomize-version: "3.6.1"
+    
+    - name: Set up Docker Context for Buildx
+      id: buildx-context
+      run: |
+        docker context create builders
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        version: latest
+        endpoint: builders
+    
+    - name: Docker meta frontend
+      id: metaFrontend
+      uses: docker/metadata-action@v4
+      with:
+        # list of Docker images to use as base name for tags
+        images: |
+          brechtcox/frontend-todo-app-herexamen
+        # generate Docker tags based on the following events/attributes
+        tags: |
+          type=semver,pattern={{raw}}
+          
+    - name: Docker meta backend
+      id: metaBackend
+      uses: docker/metadata-action@v4
+      with:
+        # list of Docker images to use as base name for tags
+        images: |
+          brechtcox/backend-todo-app-herexamen
+        # generate Docker tags based on the following events/attributes
+        tags: |
+          type=semver,pattern={{raw}}
+    
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    - name: Build and push the frontend Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: ./frontend/
+        push: true
+        tags: ${{steps.metaFrontend.outputs.tags}}
+        
+    - name: Update Kubernetes resources frontend
+      run: |
+        cd ./oplossing/cluster_1/environments/PROD/
+        kustomize edit set image argo-app-frontend=brechtcox/frontend-todo-app-herexamen:${{steps.metaFrontend.outputs.version}}
+        cd .. && cd TEST
+        kustomize edit set image argo-app-frontend=brechtcox/frontend-todo-app-herexamen:${{steps.metaFrontend.outputs.version}}
+        
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -am "rolling image to new tag frontend"
+        
+    - name: Build and push the backend Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: ./backend/
+        push: true
+        tags: ${{steps.metaBackend.outputs.tags}}
+        
+    - name: Update Kubernetes resources backend
+      run: |
+        cd ./oplossing/cluster_1/environments/PROD/
+        kustomize edit set image argo-app-backend=brechtcox/backend-todo-app-herexamen:${{steps.metaBackend.outputs.version}}
+        cd .. && cd TEST
+        kustomize edit set image argo-app-backend=brechtcox/backend-todo-app-herexamen:${{steps.metaBackend.outputs.version}}
+        cat kustomization.yaml
+        
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -am "rolling image to new tag backend"
+        
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PAT }}
