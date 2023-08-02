@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: herexamen-application
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/systemsexpert-pxl/sysexp-2223-herexamenpe-BrechtCox.git
+    targetRevision: HEAD
+    path: oplossing/cluster_1/environments/PROD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+
+    automated:
+      selfHeal: true
+      prune: true
