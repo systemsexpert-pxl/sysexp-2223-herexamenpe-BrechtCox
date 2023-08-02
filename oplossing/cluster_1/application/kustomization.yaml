@@ -1,0 +1,6 @@
+Resources:
+  - configmap.yaml
+  - database.yaml
+  - backend.yaml
+  - frontend.yaml
+  - ingress.yaml
