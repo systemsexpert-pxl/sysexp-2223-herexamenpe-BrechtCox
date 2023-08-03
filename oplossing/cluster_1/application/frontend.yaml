@@ -24,13 +24,6 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
           readOnly: true
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "75m"
-          limits:
-            memory: "128Mi"
-            cpu: "100m"
       volumes:
       - name: conf-nginx
         configMap:
