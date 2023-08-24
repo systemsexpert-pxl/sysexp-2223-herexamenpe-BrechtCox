@@ -8,7 +8,8 @@ jobs:
 
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+#    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v3
@@ -101,4 +102,4 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ secrets.PAT }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
