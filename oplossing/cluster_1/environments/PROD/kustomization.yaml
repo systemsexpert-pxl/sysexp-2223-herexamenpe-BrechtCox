@@ -3,10 +3,10 @@ resources:
 - ../../application
 images:
 - name: argo-app-backend
-  newName: brechtcox/backend-todo-app-herexamen
+  newName: brechtcox/backend-todo-app-examen
   newTag: v2.2.0
 - name: argo-app-frontend
-  newName: brechtcox/frontend-todo-app-herexamen
+  newName: brechtcox/frontend-todo-app-examen
   newTag: v2.2.0
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
