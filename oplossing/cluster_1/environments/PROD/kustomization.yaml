@@ -3,8 +3,8 @@ resources:
 - ../../application
 images:
 - name: argo-app-backend
-  newName: brechtcox/backend-todo-app-examen
-  newTag: v2.2.0
+  newName: brechtcox/backend-todo-app-herexamen
+  newTag: v4.0.0
 - name: argo-app-frontend
   newName: brechtcox/frontend-todo-app-herexamen
   newTag: v4.0.0
