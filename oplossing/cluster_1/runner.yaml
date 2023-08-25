@@ -1,0 +1,10 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: k8s-runner
+spec:
+  replicas: 1
+  template:
+    spec:
+      repository: systemsexpert-pxl/sysexp-2223-herexamenpe-BrechtCox
+      
