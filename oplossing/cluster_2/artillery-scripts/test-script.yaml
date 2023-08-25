@@ -1,0 +1,11 @@
+config:
+  target: http://localhost:9999
+  phases:
+    - duration: 60
+      arrivalCount: 200
+
+scenarios:
+  - name: "Access the /api/todo route"
+    flow:
+      - get:
+          url: /api/todo
