@@ -9,7 +9,7 @@ helm install metricbeat elastic/metricbeat
 helm install kibana elastic/kibana
 sleep 30
 #Sleep a few minutes before next commands because sometimes slow download of docker images
-kubectl port-forward svc/argocd-server -n argocd 8080:443 > /dev/null 2>&1 &
+kubectl port-forward svc/argocd-server -n argocd 8090:443 > /dev/null 2>&1 &
 kubectl port-forward svc/kibana-kibana 5601:5601 > /dev/null 2>&1 &
 kubectl get secret argocd-initial-admin-secret -n argocd -o yaml
 kubectl get secrets elasticsearch-master-credentials -ojsonpath='{.data.password}'
