@@ -46,7 +46,7 @@ de webapp te testen en loads te generen. Eerst moet de Webapp-cluster opgestart 
 
 Het bestand "/oplossing/cluster_1/secret_runner.yaml" bevat mijn Github-token (met base64 encryption). Omdat deze encryptie toch niet zo velig is, heb ik een deel van de string weggelaten. Om de runner te laten werken zal er een geldige string moeten toegevoegd worden. Dit kan gemakkelijk door een geldige Github-token te encrypteren.
 
-- echo "YOUR_GITHUB_TOKEN" | base64
+- echo -n "YOUR_GITHUB_TOKEN" | base64
 
 Vervolgens moet deze string toegevoegd worden aan het bestand "/oplossing/cluster_1/secret_runner.yaml" op de plaats waar nu de afgekapte string staat.
 
