@@ -16,10 +16,10 @@ kubectl apply -f runner.yaml
 #Sleep a few minutes before next commands because sometimes slow download of docker images
 kubectl port-forward svc/argocd-server -n argocd 8079:443 > /dev/null 2>&1 &
 kubectl port-forward svc/kibana-kibana 5601:5601 > /dev/null 2>&1 &
+export PASSWORD=$(kubectl get secrets elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 --decode)
+curl -u elastic:$PASSWORD -X POST "http://localhost:5601/api/kibana/dashboards/import" -H "Content-Type: application/json" -H "kbn-xsrf: true" -d @export.json
 echo ArgocdPassword:
 echo $(kubectl get secret argocd-initial-admin-secret -n argocd -ojsonpath='{.data.password}') | base64 --decode
 #kubectl get secrets elasticsearch-master-credentials -ojsonpath='{.data.password}'
 echo ElasticPassword:
 echo $(kubectl get secrets elasticsearch-master-credentials -ojsonpath='{.data.password}') | base64 --decode
-export PASSWORD=$(kubectl get secrets elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 --decode)
-curl -u elastic:$PASSWORD -X POST "http://localhost:5601/api/kibana/dashboards/import" -H "Content-Type: application/json" -H "kbn-xsrf: true" -d @export.json
