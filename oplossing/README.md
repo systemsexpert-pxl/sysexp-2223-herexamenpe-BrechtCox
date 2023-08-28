@@ -47,8 +47,8 @@ Deze cluster bevat de todo-app, Elasticsearch, Kibana en Argocd. Ook bevat deze 
 Om de webapp/elastic-cluster/deployments op te starten voer je volgende stappen uit:
 - Voer het script uit in "/oplossing/cluster_1/script.sh
 
-Het script zal ongeveer 6-7 minuten runnen omdat er een sleep commando is toegevoegd. Dit is nodig omdat soms de Docker images van Elasticsearch heel traag gepulled worden. 
-Ook zal het een commando uitvoeren om de port-forwarding van Kibana en Argocd in de achtergrond te doen. Daarnaast worden zowel het Argocd wachtwoord als het Kibana wachtwoord teruggeven zodat 
+Het script zal ongeveer 6-7 minuten runnen omdat er een "sleep"-commando is toegevoegd. Dit is nodig omdat soms de Docker images van Elasticsearch heel traag gepulled worden. 
+Ook zal het een commando uitvoeren om de port-forwarding van Kibana en Argocd in de achtergrond te doen. Daarnaast worden zowel het Argocd-wachtwoord als het Kibana-wachtwoord teruggeven zodat 
 deze kunnen gebruikt worden om in te loggen. Als de port-forwarding toch niet zou werken, kunnen volgende commando's manueel worden uitgevoerd (niet nodig normaal):
 
 - kubectl port-forward svc/argocd-server -n argocd 8079:443 > /dev/null 2>&1 &
@@ -57,11 +57,12 @@ deze kunnen gebruikt worden om in te loggen. Als de port-forwarding toch niet zo
 
 Het script zet volgende dingen op:
 - De webapp (Todo-app)
-- Elastissearch 
+- Elasticsearch 
 - Kibana voor het visualiseren van de metrics/logs
 - Metricbeat die de logs verzameld van de verschillende pods, nodes,...
 - Self-hosted git runner
 - Argocd voor het deployen van de app
+- Als laatste geeft het script ook het opgestelde dashboard mee aan Kibana (export.json) zodat dit meteen beschikbaar is als de gebruiker zich aanmeldt.
 
 * Kibana:  "http://localhost:5601"
 * Todo-app: "http://localhost:9999"
@@ -83,6 +84,7 @@ Het script zet volgende dingen op:
 
 Github Actions wordt uitgevoerd op een self-hosted Kubernetes pod. 
 Eerst wordt Kustomize en Buildx opgezet zodat dit later kan gebruikt worden in het script.
+De derde stap dient voor het bouwen van de Dockerfile voor de frontend.
 
 #
 
@@ -111,24 +113,39 @@ Dit wordt voor zowel backend als frontend gedaan.
 
 ---
 
-# Prometheus
+# Elasticbeat/metricbeat
 
-Verzameld metrics over de Kubernetes-cluster, pods,...
+Verzamelen en slagen metrics op over de Kubernetes-cluster, pods,...
 
 ---
 
-# Grafana
+# Kibana
 
-Bevat de dashboards met metrics van Prometheus
+Bevat de dashboards met metrics van Elasticsearch/Metricbeat. 
+
 
 ---
 
 # Todo app
 
 De app, die gedeployed wordt. Deze is bereikbaar via een Ingress-object.
+Er is gebruik gemaakt van role-based-access-control zodat de access is afgeschermd van de verschillende deployments.
 
 ---
 
 # ArgoCD 
 
-Zorgt ervoor dat de todo app gedeployed wordt en altijd de laatste versie is. 
+Zorgt ervoor dat de todo app gedeployed wordt en altijd de laatste versie is.
+
+---
+
+# Artillery
+
+Als laatste zijn er de loadtest scripts van Artillery. Na het opzetten van de twee clusters moet de kube-configuratie aangepast worden zodat de cli terug kan communiceren met de Artillery-cluster.
+Pas "~/.kube/config" aan zodat de "current-context" terug de "artillerycluster" is. Nu kunnen de loadtests uitgevoerd worden door de scripts in de "/oplossing/cluster_2/artillery-scripts" uit te applyen.
+Dit kan aan de hand van volgend commando:
+
+- Navigeer eerst terug naar de "cluster_2" folder
+- kubectl apply -k oplossing/cluster_2/artillery-scripts
+
+De loadtest zal uitgevoerd worden en de pods van de backend zullen naar 4 gescaled worden.
