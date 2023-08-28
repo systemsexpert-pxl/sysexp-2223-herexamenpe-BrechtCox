@@ -27,31 +27,45 @@
 # Demo stappen
 
 De oplossing directory bevat al de nodige scripts, YAML-files,... 
-De setup gebeurt best ook in de volgorde die hieronder beschreven staat.
+De setup gebeurt ook in de volgorde die hieronder beschreven staat. Dat betekent dus dat eerst de Artillery-cluster wordt opgestart en daarna de Webapp/Elastic-cluster.
 
-## Locust-cluster
+## Artillery-cluster
 
-Deze cluster bevat 1 locust master en 2 locust workers.
+Deze cluster bevat de Artillery-deployments
 
-Om de locust-cluster/deployments op te starten voer je volgende stappen uit:
-- Voer het script uit in "/oplossing/cluster_2/script.sh
-- Navigeer naar "http://localhost:30080" om de locust UI te bekijken
+Om de Artillery-cluster/deployments op te starten voer je volgende stappen uit:
+- Voer het script uit in "/oplossing/cluster_2/artillery-operator/script_cluster2.sh
+
+Met deze stap wordt er een k3d-cluster opgestart en de Artillery-operator gedeployed. In de map "/oplossing/cluster_2/artillery-scripts" bevinden zich de scripts voor
+de webapp te testen en loads te generen. Eerst moet de Webapp-cluster opgestart worden (zie volgende stap).
 
 
-## Webapp/Prometheus-cluster
+## Webapp/Elastic-cluster
 
-Deze cluster bevat de todo-app, Prometheus, Argocd en Grafana.
+Deze cluster bevat de todo-app, Elasticsearch, Kibana en Argocd. Ook bevat deze cluster de self-hosted actions runner. 
 
-Om de webapp/prometheus-cluster/deployments op te starten voer je volgende stappen uit:
+Om de webapp/elastic-cluster/deployments op te starten voer je volgende stappen uit:
 - Voer het script uit in "/oplossing/cluster_1/script.sh
-- Voer volgend commando uit voor Argocd wachtwoord: "kubectl get secret argocd-initial-admin-secret -n argocd -o yaml"
-- Voer volgend commnado uit voor het decoden van Argocd wachtwoord: "echo yourpassword | base64 --decode"
-- Voer volgend commando uit voor het forwarden van Argocd: "kubectl port-forward svc/argocd-server -n argocd 8080:443"
-- Voer volgend commando uit voor het forwarden van Grafana: "kubectl port-forward svc/prometheus-grafana 3000:80"
 
-* Grafana:  "http://localhost:3000"
+Het script zal ongeveer 6-7 minuten runnen omdat er een sleep commando is toegevoegd. Dit is nodig omdat soms de Docker images van Elasticsearch heel traag gepulled worden. 
+Ook zal het een commando uitvoeren om de port-forwarding van Kibana en Argocd in de achtergrond te doen. Daarnaast worden zowel het Argocd wachtwoord als het Kibana wachtwoord teruggeven zodat 
+deze kunnen gebruikt worden om in te loggen. Als de port-forwarding toch niet zou werken, kunnen volgende commando's manueel worden uitgevoerd (niet nodig normaal):
+
+- kubectl port-forward svc/argocd-server -n argocd 8079:443 > /dev/null 2>&1 &
+- kubectl port-forward svc/kibana-kibana 5601:5601 > /dev/null 2>&1 &
+
+
+Het script zet volgende dingen op:
+- De webapp (Todo-app)
+- Elastissearch 
+- Kibana voor het visualiseren van de metrics/logs
+- Metricbeat die de logs verzameld van de verschillende pods, nodes,...
+- Self-hosted git runner
+- Argocd voor het deployen van de app
+
+* Kibana:  "http://localhost:5601"
 * Todo-app: "http://localhost:9999"
-* Argocd:   "http://localhost:8080"
+* Argocd:   "http://localhost:8079"
 
 ---
 
