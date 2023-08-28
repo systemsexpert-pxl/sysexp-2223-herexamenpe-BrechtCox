@@ -42,7 +42,7 @@ de webapp te testen en loads te generen. Eerst moet de Webapp-cluster opgestart 
 
 ## Webapp/Elastic-cluster
 
-### Belangrijk voor het starten van het script:
+### BELANGRIJK voor het starten van het script:
 
 Het bestand "/oplossing/cluster_1/secret_runner.yaml" bevat mijn Github-token (met base64 encryption). Omdat deze encryptie toch niet zo velig is, heb ik een deel van de string weggelaten. Om de runner te laten werken zal er een geldige string moeten toegevoegd worden. Dit kan gemakkelijk door een geldige Github-token te encrypteren.
 
@@ -54,7 +54,7 @@ Dus achter de "github_token:".
 
 Eens dit gedaan is kan het script uitgevoerd worden en zal de self-hosted runner werken.
 
-
+---
 
 Deze cluster bevat de todo-app, Elasticsearch, Kibana en Argocd. Ook bevat deze cluster de self-hosted actions runner. 
 
