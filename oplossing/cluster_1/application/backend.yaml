@@ -34,6 +34,7 @@ spec:
               key: database-uri
         - name: PORT
           value: "8080"
+      serviceAccountName: webapp-manager
 ---
 apiVersion: v1
 kind: Service
