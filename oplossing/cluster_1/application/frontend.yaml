@@ -24,6 +24,7 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
           readOnly: true
+      serviceAccountName: webapp-manager
       volumes:
       - name: conf-nginx
         configMap:
