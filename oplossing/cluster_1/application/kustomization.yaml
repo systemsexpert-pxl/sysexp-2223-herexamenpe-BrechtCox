@@ -1,5 +1,8 @@
 Resources:
   - configmap.yaml
+  - rolebinding.yaml
+  - serviceaccount.yaml
+  - role.yaml
   - database.yaml
   - backend.yaml
   - frontend.yaml
